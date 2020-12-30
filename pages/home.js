@@ -1,6 +1,6 @@
 import styles from "../styles/Home.module.css"
 
-import Item from "./item"
+import Item from "../components/item"
 
 import requestGraphQL from "../lib/graphql"
 

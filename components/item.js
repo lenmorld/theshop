@@ -53,10 +53,7 @@ export default function Item({ item: _item }) {
   return (
     <div className={styles.card}>
       <h3>{item.name}</h3>
-      <div style={{ margin: "1rem 0" }}>
-        $
-{item.price}
-      </div>
+      <div style={{ margin: "1rem 0" }}>${item.price}</div>
       <img
         alt={item.name}
         src={item.imageUrl}
