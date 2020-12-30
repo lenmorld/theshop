@@ -15,7 +15,7 @@ import requestGraphQL from "../lib/graphql"
   );
 */
 
-export default function Home({ items }) {
+export default function Products({ items }) {
   // console.log(items)
 
   return (

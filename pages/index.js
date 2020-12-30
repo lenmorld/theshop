@@ -12,9 +12,22 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>Shoppy</h1>
-        <Link href="/popular">
-          <a>Popular</a>
-        </Link>
+        <div
+          style={{
+            display: "flex",
+            minHeight: "200px",
+            flexDirection: "column",
+            justifyContent: "space-around",
+            alignItems: "center",
+          }}
+        >
+          <Link href="/products">
+            <a>Browse Products</a>
+          </Link>
+          <Link href="/secret">
+            <a>Secret Page</a>
+          </Link>
+        </div>
       </main>
 
       <footer className={styles.footer}>
