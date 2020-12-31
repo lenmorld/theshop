@@ -24,6 +24,9 @@ export default function Home() {
           <Link href="/products">
             <a>Browse Products</a>
           </Link>
+          <Link href="/test">
+            <a>Test page with fetch -> redirect</a>
+          </Link>
           <Link href="/secret">
             <a>Secret Page</a>
           </Link>
