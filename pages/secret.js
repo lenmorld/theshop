@@ -1,29 +1,34 @@
 import React, { useContext } from "react"
+import Router from "next/router"
 
 import Authentication from "../components/authentication"
 import UserContext from "../components/userContext"
 
-export function Secret() {
+function Wrapper() {
   const logout = () => {
-    console.log("logout")
+    if (typeof window !== "undefined") {
+      localStorage && localStorage.removeItem("userId")
+      Router.push("/")
+    }
   }
 
   // SOLUTION 4: useContext
   const user = useContext(UserContext)
+  console.log(user)
 
   return (
-    <>
+    <div>
       <h1>Secret page!</h1>
       <div>{user.name}</div>
       <button onClick={logout}>Logout</button>
-    </>
+    </div>
   )
 }
 
-export default function AuthWrapper() {
+export default function Secret() {
   return (
     <Authentication>
-      <Secret />
+      <Wrapper />
     </Authentication>
   )
 }
