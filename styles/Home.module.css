@@ -127,21 +127,3 @@
   }
 }
 
-
-.buttonPrimary {
-  background-color: #0070f3;
-  color: white;
-  padding: 1rem 1.25rem;
-  font-size: inherit;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.buttonPrimary:hover,
-.buttonPrimary:focus,
-.buttonPrimary:active {
-  /* color: #0070f3; */
-  /* border-color: #0070f3; */
-  background-color: #004ca2;
-}
