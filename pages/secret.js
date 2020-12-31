@@ -1,34 +1,19 @@
-import React, { useContext } from "react"
-import Router from "next/router"
+import React from "react"
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
 
-import Authentication from "../components/authentication"
-import UserContext from "../components/userContext"
+// import { withAuth, withLoginRequired } from "use-auth0-hooks"
 
-function Wrapper() {
-  const logout = () => {
-    if (typeof window !== "undefined") {
-      localStorage && localStorage.removeItem("userId")
-      Router.push("/")
-    }
-  }
-
-  // SOLUTION 4: useContext
-  const user = useContext(UserContext)
-  console.log(user)
-
+function Secret({ auth }) {
+  const { user } = useAuth0()
+  // const { user } = auth
   return (
     <div>
-      <h1>Secret page!</h1>
-      <div>{user.name}</div>
-      <button onClick={logout}>Logout</button>
+      <h1>Secret</h1>
+      <p>This is the profile page.</p>
+      <pre>{JSON.stringify(user || {}, null, 2)}</pre>
     </div>
   )
 }
 
-export default function Secret() {
-  return (
-    <Authentication>
-      <Wrapper />
-    </Authentication>
-  )
-}
+// export default withLoginRequired(withAuth(Profile))
+export default withAuthenticationRequired(Secret)
