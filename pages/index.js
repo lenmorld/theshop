@@ -22,14 +22,17 @@ export default function Home() {
           }}
         >
           <Link href="/products">
-            <a>Browse Products</a>
+            <button className="buttonPrimary">Start browsing</button>
           </Link>
-          <Link href="/test">
+          {/* <Link href="/test">
             <a>Test page with fetch -> redirect</a>
-          </Link>
-          <Link href="/secret">
+          </Link> */}
+          {/* <Link href="/secret">
             <a>Secret Page</a>
-          </Link>
+          </Link> */}
+          {/* <Link href="/profile">
+            <a>Profile Page</a>
+          </Link> */}
         </div>
       </main>
 
