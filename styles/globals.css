@@ -6,6 +6,16 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+main {
+  /* padding: 5rem 0; */
+  margin: 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -16,7 +26,7 @@ a {
 }
 
 nav {
-  padding: 1rem;
+  padding: 1rem 2rem;
 }
 
 nav ul {
@@ -24,6 +34,22 @@ nav ul {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+nav ul li .active {
+  font-weight: bold;
+  color: #004ca2;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+button:disabled {
+  background-color: gray;
+  cursor:auto;
 }
 
 .buttonPrimary {
@@ -36,12 +62,20 @@ nav ul {
   cursor: pointer;
 }
 
-.buttonPrimary:hover,
-.buttonPrimary:focus,
-.buttonPrimary:active {
-  /* color: #0070f3; */
-  /* border-color: #0070f3; */
+.buttonPrimary:hover:enabled,
+.buttonPrimary:focus:enabled,
+.buttonPrimary:active:enabled {
   background-color: #004ca2;
+}
+
+.buttonPrimary.success {
+  background-color: rgb(0, 164, 0);
+}
+
+.buttonPrimary.success:hover:enabled,
+.buttonPrimary.success:focus:enabled,
+.buttonPrimary.success:active:enabled {
+  background-color: rgb(59, 196, 1);
 }
 
 .buttonFlat {
@@ -64,4 +98,33 @@ nav ul {
   /* border-color: #0070f3; */
   /* background-color: #004ca2;
    */
+}
+
+/* #portal {
+  position: fixed;
+  top: 6rem;
+  right: 2rem;
+  border: 1px solid black;
+} */
+.cartItemsTable .header {
+  text-transform: uppercase;
+  font-weight: bold;
+  background-color: rgb(198, 198, 198);
+  padding: 0.5rem 0.25rem;
+}
+
+.cartItemsTable .cell {
+  /* border: 1px solid gray; */
+  padding: 2rem 0;
+}
+
+.cartItemsTable .cell .description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+}
+
+.cartItemsTable .number {
+  text-align: center;
 }
