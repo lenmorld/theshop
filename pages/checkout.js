@@ -1,41 +1,72 @@
-import { loadStripe } from "@stripe/stripe-js"
-import {
-  CardElement,
-  Elements,
-  useElements,
-  useStripe,
-} from "@stripe/react-stripe-js"
+import React, { useState, useEffect } from 'react'
 
-import CheckoutForm from "../components/checkoutForm"
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from '@stripe/react-stripe-js'
 
-import styles from "../styles/CreditCard.module.css"
+import { useRouter } from 'next/router'
 
-// const STRIPE_PK = 'pk_test_6pRNASCoBOKtIshFeQd4XMUh'
-const STRIPE_PK =
-  "pk_test_51I5EroGEcqGP7rtoC6NguX67BJ1urw0jMzJmWhNQM6btrQlqMsAzSp7TiKo93mW4iU7WHYqZ3dcWGEx6WrDufl0C00Thtrrt3v"
+import CheckoutForm from '../components/checkoutForm'
+
+const { NEXT_PUBLIC_STRIPE_PK } = process.env
+
+const ELEMENTS_OPTIONS = {
+	fonts: [
+		{
+			cssSrc: 'https://fonts.googleapis.com/css?family=Roboto',
+		},
+	],
+}
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripePromise = loadStripe(STRIPE_PK)
-
-const ELEMENTS_OPTIONS = {
-  fonts: [
-    {
-      cssSrc: "https://fonts.googleapis.com/css?family=Roboto",
-    },
-  ],
-}
+const stripePromise = loadStripe(NEXT_PUBLIC_STRIPE_PK)
 
 export default function Checkout() {
-  return (
-    <div>
-      <h1>Checkout</h1>
+	const router = useRouter()
 
-      <div className={styles.AppWrapper} options={ELEMENTS_OPTIONS}>
-        <Elements stripe={stripePromise}>
-          <CheckoutForm />
-        </Elements>
-      </div>
-    </div>
-  )
+	const [cartItems, setCartItems] = useState(() => {
+		if (typeof window !== 'undefined') {
+			return JSON.parse(localStorage.getItem('shoppy_cart') || '[]')
+		}
+		return []
+	}, [])
+
+	const total = cartItems.reduce((acc, curr) => {
+		return acc + curr.price * curr.orderCount
+	}, 0)
+
+	const currency = 'CAD'
+
+	const onOrderSuccess = ({ successData }) => {
+		// TODO: save order in DB, so redirect page can query order
+		if (typeof window !== 'undefined') {
+			localStorage.setItem(
+				'shoppy_order_success_details',
+				JSON.stringify(successData),
+			)
+		}
+
+		router.push(
+			router.push({
+				// pathname: '/post/[pid]', // TODO: generate an order ID
+				pathname: '/order-success',
+				// query: { pid: post.id },
+			}),
+		)
+	}
+
+	return (
+		<main>
+			<h1>Checkout</h1>
+			{/* TODO: Order summary */}
+
+			<Elements stripe={stripePromise}>
+				<CheckoutForm
+					amount={total}
+					currency={currency}
+					onOrderSuccess={onOrderSuccess}
+				/>
+			</Elements>
+		</main>
+	)
 }
