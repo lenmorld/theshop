@@ -24,6 +24,8 @@ const stripePromise = loadStripe(NEXT_PUBLIC_STRIPE_PK)
 export default function Checkout() {
 	const router = useRouter()
 
+	// DRY up with CartDetails
+
 	const [cartItems, setCartItems] = useState(() => {
 		if (typeof window !== 'undefined') {
 			return JSON.parse(localStorage.getItem('shoppy_cart') || '[]')

@@ -3,12 +3,18 @@ import React, { useState } from 'react'
 import { formatCurrency } from '../lib/formats'
 
 export default function CartDetails() {
+	// DRY up with Checkout
+
 	const [cartItems, setCartItems] = useState(() => {
 		if (typeof window !== 'undefined') {
 			return JSON.parse(localStorage.getItem('shoppy_cart') || '[]')
 		}
 		return []
 	}, [])
+
+	const total = cartItems.reduce((acc, curr) => {
+		return acc + curr.price * curr.orderCount
+	}, 0)
 
 	return (
 		<div>
@@ -60,6 +66,9 @@ export default function CartDetails() {
 						</React.Fragment>
 					)
 				})}
+				<div className="header number" style={{ gridColumn: '1 / 4' }} />
+				<div className="header number">Total</div>
+				<div className="header number">{formatCurrency(total)}</div>
 			</div>
 		</div>
 	)

@@ -99,7 +99,7 @@ export default function CartSummary({ items, hideCart }) {
 					>
 						Continue Shopping
 					</button>
-					<Link href="/checkout">
+					<Link href="/cart">
 						<button className="buttonPrimary success" style={{ marginTop: '2rem' }}>
 							Proceed to Cart
 						</button>
