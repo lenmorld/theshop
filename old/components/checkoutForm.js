@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react"
 
 import {
-	CardElement,
-	Elements,
-	useElements,
-	useStripe,
-} from '@stripe/react-stripe-js'
+  CardElement,
+  Elements,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js"
 
-import api from '../lib/shoppingCart'
+import api from "../lib/shoppingCart"
 
-import styles from '../styles/CheckoutForm.module.css'
+import styles from "../styles/CheckoutForm.module.css"
 
 // import styles from "../styles/CreditCard.module.css"
 
@@ -79,220 +79,220 @@ import styles from '../styles/CheckoutForm.module.css'
 // )
 
 function Field({
-	label,
-	id,
-	type,
-	placeholder,
-	required,
-	autoComplete,
-	value,
-	onChange,
+  label,
+  id,
+  type,
+  placeholder,
+  required,
+  autoComplete,
+  value,
+  onChange,
 }) {
-	return (
-		<div>
-			<label htmlFor={id} style={{ fontSize: '0.75rem' }}>
-				{label}
-			</label>
-			<input
-				id={id}
-				type={type}
-				placeholder={placeholder}
-				required={required}
-				autoComplete={autoComplete}
-				value={value}
-				onChange={onChange}
-			/>
-		</div>
-	)
+  return (
+    <div>
+      <label htmlFor={id} style={{ fontSize: "0.75rem" }}>
+        {label}
+      </label>
+      <input
+        id={id}
+        type={type}
+        placeholder={placeholder}
+        required={required}
+        autoComplete={autoComplete}
+        value={value}
+        onChange={onChange}
+      />
+    </div>
+  )
 }
 
 export default function CheckoutForm({ cartItems }) {
-	const stripe = useStripe()
-	const elements = useElements()
+  const stripe = useStripe()
+  const elements = useElements()
 
-	const [amount, setAmount] = useState(0)
-	const [currency, setCurrency] = useState('')
-	const [clientSecret, setClientSecret] = useState(null)
+  const [amount, setAmount] = useState(0)
+  const [currency, setCurrency] = useState("")
+  const [clientSecret, setClientSecret] = useState(null)
 
-	const [succeeded, setSucceeded] = useState(false)
+  const [succeeded, setSucceeded] = useState(false)
 
-	const [successData, setSuccessData] = useState(null)
-	const [error, setError] = useState(null)
+  const [successData, setSuccessData] = useState(null)
+  const [error, setError] = useState(null)
 
-	const [cardComplete, setCardComplete] = useState(false)
-	const [processing, setProcessing] = useState(false)
-	//   const [paymentMethod, setPaymentMethod] = useState(null)
-	const [billingDetails, setBillingDetails] = useState({
-		email: '',
-		phone: '',
-		name: '',
-	})
+  const [cardComplete, setCardComplete] = useState(false)
+  const [processing, setProcessing] = useState(false)
+  //   const [paymentMethod, setPaymentMethod] = useState(null)
+  const [billingDetails, setBillingDetails] = useState({
+    email: "",
+    phone: "",
+    name: "",
+  })
 
-	// when checkout form is loaded, get cart details
-	// for now, just get total amount
-	// TODO: get all cart details
-	useEffect(() => {
-		// Step 1: Fetch product/cart details from API
-		// to make sure it can't be tampered with in the client
+  // when checkout form is loaded, get cart details
+  // for now, just get total amount
+  // TODO: get all cart details
+  useEffect(() => {
+    // Step 1: Fetch product/cart details from API
+    // to make sure it can't be tampered with in the client
 
-		// TODO: save and get cart items from/to serverless functions + GraphCMS instead of localStorage
-		// async function fetchCart() {
-		// 	const cart = await api.getCartDetails()
-		// 	setAmount(cart.amount)
-		// 	setCurrency(cart.currency)
-		// }
+    // TODO: save and get cart items from/to serverless functions + GraphCMS instead of localStorage
+    // async function fetchCart() {
+    // 	const cart = await api.getCartDetails()
+    // 	setAmount(cart.amount)
+    // 	setCurrency(cart.currency)
+    // }
 
-		async function fetchCart() {
-			// TEMP: get from props from local storage
-			const total = cartItems.reduce((acc, curr) => {
-				return acc + curr.price * curr.orderCount
-			}, 0)
+    async function fetchCart() {
+      // TEMP: get from props from local storage
+      const total = cartItems.reduce((acc, curr) => {
+        return acc + curr.price * curr.orderCount
+      }, 0)
 
-			// const cart = await api.getCartDetails()
-			setAmount(total)
-			setCurrency('CAD')
-		}
+      // const cart = await api.getCartDetails()
+      setAmount(total)
+      setCurrency("CAD")
+    }
 
-		// Step 2: Create PaymentIntent over Stripe API
-		async function createPayment() {
-			let paymentClientSecret
+    // Step 2: Create PaymentIntent over Stripe API
+    async function createPayment() {
+      let paymentClientSecret
 
-			try {
-				paymentClientSecret = await api.createPaymentIntent({
-					payment_method_types: ['card'],
-				})
-				setClientSecret(paymentClientSecret)
-			} catch (e) {
-				setError(e.message)
-			}
-		}
+      try {
+        paymentClientSecret = await api.createPaymentIntent({
+          payment_method_types: ["card"],
+        })
+        setClientSecret(paymentClientSecret)
+      } catch (e) {
+        setError(e.message)
+      }
+    }
 
-		fetchCart()
-		createPayment()
-	}, [])
+    fetchCart()
+    createPayment()
+  }, [])
 
-	const handleSubmit = async (e) => {
-		e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault()
 
-		if (!stripe || !elements) {
-			// Stripe.js not loaded yet. Form submission must be disabled
-			return
-		}
+    if (!stripe || !elements) {
+      // Stripe.js not loaded yet. Form submission must be disabled
+      return
+    }
 
-		if (error) {
-			elements.getElement('card').focus()
-			return
-		}
+    if (error) {
+      elements.getElement("card").focus()
+      return
+    }
 
-		if (cardComplete) {
-			setProcessing(true)
-		}
+    if (cardComplete) {
+      setProcessing(true)
+    }
 
-		// Create payment method
-		// OPTIONAL when using Payment Intent
-		// const payload = await stripe.createPaymentMethod({
-		//   type: "card",
-		//   card: elements.getElement(CardElement),
-		//   billing_details: billingDetails,
-		// })
+    // Create payment method
+    // OPTIONAL when using Payment Intent
+    // const payload = await stripe.createPaymentMethod({
+    //   type: "card",
+    //   card: elements.getElement(CardElement),
+    //   billing_details: billingDetails,
+    // })
 
-		// STEP 3: Confirm payment with stripe
-		// using PaymentIntent clientSecret and CardElement
-		const payload = await stripe.confirmCardPayment(clientSecret, {
-			payment_method: {
-				card: elements.getElement(CardElement),
-				billing_details: billingDetails,
-			},
-		})
+    // STEP 3: Confirm payment with stripe
+    // using PaymentIntent clientSecret and CardElement
+    const payload = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: elements.getElement(CardElement),
+        billing_details: billingDetails,
+      },
+    })
 
-		setProcessing(false)
+    setProcessing(false)
 
-		if (payload.error) {
-			setError(`Payment failed: ${payload.error.message}`)
-			console.error('[error]', payload.error)
-		} else {
-			//   setPaymentMethod(payload.paymentMethod)
-			setError(null)
-			setSucceeded(true)
-			setSuccessData(payload.paymentIntent)
-			console.log('[PaymentIntent]', payload.paymentIntent)
-		}
-	}
+    if (payload.error) {
+      setError(`Payment failed: ${payload.error.message}`)
+      console.error("[error]", payload.error)
+    } else {
+      //   setPaymentMethod(payload.paymentMethod)
+      setError(null)
+      setSucceeded(true)
+      setSuccessData(payload.paymentIntent)
+      console.log("[PaymentIntent]", payload.paymentIntent)
+    }
+  }
 
-	const reset = () => {
-		setError(null)
-		setSucceeded(false)
-		setSuccessData(null)
-		setProcessing(false)
-		// setPaymentMethod(null)
-		setBillingDetails({
-			email: '',
-			phone: '',
-			name: '',
-		})
-	}
+  const reset = () => {
+    setError(null)
+    setSucceeded(false)
+    setSuccessData(null)
+    setProcessing(false)
+    // setPaymentMethod(null)
+    setBillingDetails({
+      email: "",
+      phone: "",
+      name: "",
+    })
+  }
 
-	//   return paymentMethod ? (
-	//     <div className={styles.Result}>
-	//       <div className={styles.ResultTitle} role="alert">
-	//         Payment successful
-	//       </div>
-	//       <div className={styles.ResultMessage}>
-	//         Thanks for trying Stripe Elements. No money was charged, but we
-	//         generated a PaymentMethod:
-	//         {paymentMethod.id}
-	//       </div>
-	//       <ResetButton onClick={reset} />
-	//     </div>
-	//   ) :
+  //   return paymentMethod ? (
+  //     <div className={styles.Result}>
+  //       <div className={styles.ResultTitle} role="alert">
+  //         Payment successful
+  //       </div>
+  //       <div className={styles.ResultMessage}>
+  //         Thanks for trying Stripe Elements. No money was charged, but we
+  //         generated a PaymentMethod:
+  //         {paymentMethod.id}
+  //       </div>
+  //       <ResetButton onClick={reset} />
+  //     </div>
+  //   ) :
 
-	const renderSuccess = () => {
-		return (
-			<div className="sr-field-success message">
-				<h1>Your test payment succeeded</h1>
-				<p>View PaymentIntent response:</p>
-				<pre className="sr-callout">
-					<code>{JSON.stringify(successData, null, 2)}</code>
-				</pre>
-				<button onClick={reset}>RESET</button>
-			</div>
-		)
-	}
+  const renderSuccess = () => {
+    return (
+      <div className="sr-field-success message">
+        <h1>Your test payment succeeded</h1>
+        <p>View PaymentIntent response:</p>
+        <pre className="sr-callout">
+          <code>{JSON.stringify(successData, null, 2)}</code>
+        </pre>
+        <button onClick={reset}>RESET</button>
+      </div>
+    )
+  }
 
-	const renderForm = () => {
-		const options = {
-			style: {
-				base: {
-					color: '#32325d',
-					fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-					fontSmoothing: 'antialiased',
-					fontSize: '16px',
-					'::placeholder': {
-						color: '#aab7c4',
-					},
-				},
-				invalid: {
-					color: '#fa755a',
-					iconColor: '#fa755a',
-				},
-			},
-		}
+  const renderForm = () => {
+    const options = {
+      style: {
+        base: {
+          color: "#32325d",
+          fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+          fontSmoothing: "antialiased",
+          fontSize: "16px",
+          "::placeholder": {
+            color: "#aab7c4",
+          },
+        },
+        invalid: {
+          color: "#fa755a",
+          iconColor: "#fa755a",
+        },
+      },
+    }
 
-		return (
-			<form onSubmit={handleSubmit}>
-				<h1>
-					{currency.toLocaleUpperCase()}{' '}
-					{amount.toLocaleString(
-						typeof window !== 'undefined' ? navigator.language : 'en',
-						{
-							minimumFractionDigits: 2,
-						},
-					)}{' '}
-				</h1>
-				<h4>Finalize order</h4>
+    return (
+      <form onSubmit={handleSubmit}>
+        <h1>
+          {currency.toLocaleUpperCase()}{" "}
+          {amount.toLocaleString(
+            typeof window !== "undefined" ? navigator.language : "en",
+            {
+              minimumFractionDigits: 2,
+            },
+          )}{" "}
+        </h1>
+        <h4>Finalize order</h4>
 
-				<div>
-					{/* <div>
+        <div>
+          {/* <div>
             <input
               type="text"
               id="name"
@@ -302,89 +302,89 @@ export default function CheckoutForm({ cartItems }) {
               className="sr-input"
             />
           </div> */}
-					<fieldset>
-						<Field
-							label="Name"
-							id="name"
-							type="text"
-							placeholder="John Doe"
-							required
-							autoComplete="name"
-							value={billingDetails.name}
-							onChange={(e) => {
-								setBillingDetails({
-									...billingDetails,
-									name: e.target.value,
-								})
-							}}
-						/>
-						<Field
-							label="Email"
-							id="email"
-							type="email"
-							autoComplete="email"
-							placeholder="johndoe@example.com"
-							required
-							value={billingDetails.email}
-							onChange={(e) => {
-								setBillingDetails({
-									...billingDetails,
-									email: e.target.value,
-								})
-							}}
-						/>
-						<Field
-							label="Phone"
-							id="phone"
-							type="tel"
-							autoComplete="tel"
-							placeholder="(438) 123-1234"
-							required
-							value={billingDetails.phone}
-							onChange={(e) => {
-								setBillingDetails({
-									...billingDetails,
-									phone: e.target.value,
-								})
-							}}
-						/>
-					</fieldset>
+          <fieldset>
+            <Field
+              label="Name"
+              id="name"
+              type="text"
+              placeholder="John Doe"
+              required
+              autoComplete="name"
+              value={billingDetails.name}
+              onChange={(e) => {
+                setBillingDetails({
+                  ...billingDetails,
+                  name: e.target.value,
+                })
+              }}
+            />
+            <Field
+              label="Email"
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder="johndoe@example.com"
+              required
+              value={billingDetails.email}
+              onChange={(e) => {
+                setBillingDetails({
+                  ...billingDetails,
+                  email: e.target.value,
+                })
+              }}
+            />
+            <Field
+              label="Phone"
+              id="phone"
+              type="tel"
+              autoComplete="tel"
+              placeholder="(438) 123-1234"
+              required
+              value={billingDetails.phone}
+              onChange={(e) => {
+                setBillingDetails({
+                  ...billingDetails,
+                  phone: e.target.value,
+                })
+              }}
+            />
+          </fieldset>
 
-					<div>
-						<CardElement
-							options={options}
-							onChange={(e) => {
-								if (e.error) {
-									console.error(e)
-									setError(e.error.message)
-								} else {
-									// value well-formed -> enable form submission
-									setCardComplete(e.complete)
-								}
-							}}
-						/>
-					</div>
-				</div>
+          <div>
+            <CardElement
+              options={options}
+              onChange={(e) => {
+                if (e.error) {
+                  console.error(e)
+                  setError(e.error.message)
+                } else {
+                  // value well-formed -> enable form submission
+                  setCardComplete(e.complete)
+                }
+              }}
+            />
+          </div>
+        </div>
 
-				{error && <div className="message sr-field-error">{error}</div>}
+        {error && <div className="message sr-field-error">{error}</div>}
 
-				<button
-					className="btn"
-					disabled={processing || !clientSecret || !stripe}
-					type="submit"
-				>
-					{processing ? 'Processing…' : 'Pay'}
-				</button>
-			</form>
-		)
-	}
+        <button
+          className="btn"
+          disabled={processing || !clientSecret || !stripe}
+          type="submit"
+        >
+          {processing ? "Processing…" : "Pay"}
+        </button>
+      </form>
+    )
+  }
 
-	return (
-		<div className="checkout-form">
-			<div className="sr-payment-form">
-				<div className="sr-form-row" />
-				{succeeded ? renderSuccess() : renderForm()}
-			</div>
-		</div>
-	)
+  return (
+    <div className="checkout-form">
+      <div className="sr-payment-form">
+        <div className="sr-form-row" />
+        {succeeded ? renderSuccess() : renderForm()}
+      </div>
+    </div>
+  )
 }
