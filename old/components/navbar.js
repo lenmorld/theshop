@@ -33,7 +33,8 @@ export default function NavBar() {
                 <li>
                   <button
                     onClick={() =>
-                      logout({ returnTo: "http://localhost:3000" })}
+                      logout({ returnTo: "http://localhost:3000" })
+                    }
                   >
                     Log out
                   </button>
@@ -43,7 +44,8 @@ export default function NavBar() {
               <li>
                 <button
                   onClick={() =>
-                    login({ appState: { returnTo: { pathname, query } } })}
+                    login({ appState: { returnTo: { pathname, query } } })
+                  }
                 >
                   Log in
                 </button>
